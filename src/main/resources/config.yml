@@ -50,6 +50,9 @@ profiles:
         enabled: true
         min-rtt-ms: 25
         negative-rtt-allowance-ms: 2
+      Reach:
+        enabled: true
+        tolerance: 0.2
   aggressive_qa:
     inherit: safe_default
     checks:

@@ -1,5 +1,7 @@
 package com.apexguard.util;
 
+import java.util.Arrays;
+
 public final class Stats {
     private Stats() {}
 
@@ -14,7 +16,6 @@ public final class Stats {
     }
 
     public static double gcdDegrees(double a, double b) {
-        // Work in thousandths of a degree to avoid FP artifacts
         long x = Math.round(Math.abs(a) * 1000.0);
         long y = Math.round(Math.abs(b) * 1000.0);
         if (x == 0) return y / 1000.0;
@@ -37,5 +38,38 @@ public final class Stats {
             base = g;
         }
         return consistent / (deltas.length - 1);
+    }
+
+    public static double median(double[] arr) {
+        if (arr.length == 0) return 0.0;
+        double[] copy = Arrays.copyOf(arr, arr.length);
+        Arrays.sort(copy);
+        int mid = copy.length / 2;
+        if ((copy.length & 1) == 0) return 0.5 * (copy[mid - 1] + copy[mid]);
+        return copy[mid];
+    }
+
+    public static double mad(double[] arr) {
+        if (arr.length == 0) return 0.0;
+        double med = median(arr);
+        double[] dev = new double[arr.length];
+        for (int i = 0; i < arr.length; i++) dev[i] = Math.abs(arr[i] - med);
+        return median(dev) * 1.4826; // consistency constant
+    }
+
+    public static double percentile(double[] arr, double p) {
+        if (arr.length == 0) return 0.0;
+        double[] copy = Arrays.copyOf(arr, arr.length);
+        Arrays.sort(copy);
+        double rank = Math.max(0, Math.min(1, p)) * (copy.length - 1);
+        int lo = (int) Math.floor(rank);
+        int hi = (int) Math.ceil(rank);
+        if (lo == hi) return copy[lo];
+        double w = rank - lo;
+        return copy[lo] * (1 - w) + copy[hi] * w;
+    }
+
+    public static double clamp(double v, double min, double max) {
+        return Math.max(min, Math.min(max, v));
     }
 }

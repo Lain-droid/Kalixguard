@@ -7,6 +7,7 @@ import com.apexguard.core.PlayerManager;
 import com.apexguard.logging.JsonLogger;
 import com.apexguard.network.PacketView;
 import com.apexguard.player.PlayerData;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -31,6 +32,7 @@ public final class CheckRegistry {
     private void registerDefaults() {
         checks.add(new com.apexguard.checks.combat.AutoClickerCheck(configManager, actionEngine, jsonLogger));
         checks.add(new com.apexguard.checks.combat.AimAssistCheck(configManager, actionEngine, jsonLogger));
+        checks.add(new com.apexguard.checks.combat.ReachCheck(configManager, actionEngine, jsonLogger));
         checks.add(new com.apexguard.checks.movement.SpeedCheck(configManager, actionEngine, jsonLogger));
         checks.add(new com.apexguard.checks.packet.PacketFloodCheck(configManager, actionEngine, jsonLogger));
         checks.add(new com.apexguard.checks.packet.KeepAliveSpoofCheck(configManager, actionEngine, jsonLogger));
@@ -42,7 +44,6 @@ public final class CheckRegistry {
             try {
                 check.handlePacketAsync(data, packet);
             } catch (Throwable t) {
-                // swallow and continue
             }
         }
     }
@@ -52,7 +53,15 @@ public final class CheckRegistry {
             try {
                 check.handleTickSync(data);
             } catch (Throwable t) {
-                // swallow
+            }
+        }
+    }
+
+    public void onCombatEvent(PlayerData attacker, EntityDamageByEntityEvent event) {
+        for (Check check : checks) {
+            try {
+                check.handleCombatEvent(attacker, event);
+            } catch (Throwable t) {
             }
         }
     }

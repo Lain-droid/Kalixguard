@@ -37,6 +37,7 @@ public final class CombatListener implements Listener {
         if (!(e.getDamager() instanceof Player)) return;
         Player p = (Player) e.getDamager();
         PlayerData data = playerManager.getPlayerData(p.getUniqueId());
+        registry.onCombatEvent(data, e);
         registry.onTickSync(data);
     }
 }
