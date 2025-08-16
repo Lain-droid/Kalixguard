@@ -45,4 +45,14 @@ public final class CheckRegistry {
             }
         }
     }
+
+    public void onTickSync(PlayerData data) {
+        for (Check check : checks) {
+            try {
+                check.handleTickSync(data);
+            } catch (Throwable t) {
+                // swallow
+            }
+        }
+    }
 }
