@@ -26,13 +26,20 @@ public final class ApexGuardPlugin extends JavaPlugin {
         final Plugin protocolLib = Bukkit.getPluginManager().getPlugin("ProtocolLib");
         if (protocolLib != null && protocolLib.isEnabled()) {
             try {
+                Class.forName("com.apexguard.network.ProtocolLibBridge");
+            } catch (ClassNotFoundException cnf) {
+                getLogger().info("ProtocolLib detected but bridge not bundled; running without packet capture.");
+            }
+            try {
                 Class<?> bridgeClass = Class.forName("com.apexguard.network.ProtocolLibBridge");
                 protocolBridge = (ProtocolBridge) bridgeClass
                         .getConstructor(JavaPlugin.class, TaskEngine.class, PlayerManager.class, ConfigManager.class)
                         .newInstance(this, taskEngine, playerManager, configManager);
                 getLogger().info("ProtocolLib detected, packet-level features enabled.");
+            } catch (ClassNotFoundException ignored) {
+                // already logged above
             } catch (Throwable t) {
-                getLogger().warning("Failed to initialize ProtocolLib bridge reflectively. Running without packet capture. " + t.getMessage());
+                getLogger().warning("ProtocolLib present but bridge failed to initialize; running without packet capture: " + t.getClass().getSimpleName());
             }
         } else {
             getLogger().info("ProtocolLib not present; running in API-only mode with reduced detection.");

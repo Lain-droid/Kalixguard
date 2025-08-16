@@ -7,6 +7,7 @@ import org.bukkit.plugin.Plugin;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.HexFormat;
@@ -29,13 +30,28 @@ public final class IntegrityScanner {
     public void stop() {
         if (!plugin.getConfig().getBoolean("self_protection.integrity-scan", true)) return;
         String current = hashJar();
-        if (baselineSha != null && !baselineSha.equals(current)) {
+        if (baselineSha != null && !baselineSha.equals(current) && !current.isEmpty()) {
             plugin.getLogger().warning("Plugin jar hash changed during runtime. Possible tampering.");
         }
     }
 
     private String hashJar() {
-        File file = new File(plugin.getDataFolder().getParentFile(), plugin.getName() + ".jar");
+        File file;
+        try {
+            var codeSource = plugin.getClass().getProtectionDomain().getCodeSource();
+            if (codeSource == null) {
+                plugin.getLogger().info("Integrity scan skipped: no code source available.");
+                return "";
+            }
+            file = new File(codeSource.getLocation().toURI());
+        } catch (URISyntaxException e) {
+            plugin.getLogger().info("Integrity scan skipped: invalid code source URI.");
+            return "";
+        }
+        if (!file.isFile()) {
+            plugin.getLogger().info("Integrity scan skipped: not running from a jar (" + file.getPath() + ").");
+            return "";
+        }
         try (FileInputStream fis = new FileInputStream(file)) {
             MessageDigest md = MessageDigest.getInstance("SHA-256");
             byte[] buf = new byte[8192];
@@ -43,7 +59,7 @@ public final class IntegrityScanner {
             while ((r = fis.read(buf)) != -1) md.update(buf, 0, r);
             return HexFormat.of().formatHex(md.digest());
         } catch (IOException | NoSuchAlgorithmException e) {
-            plugin.getLogger().warning("Failed to hash jar: " + e.getMessage());
+            plugin.getLogger().info("Integrity scan skipped: " + e.getMessage());
             return "";
         }
     }
