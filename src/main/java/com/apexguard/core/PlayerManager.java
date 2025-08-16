@@ -3,6 +3,7 @@ package com.apexguard.core;
 import com.apexguard.checks.registry.CheckRegistry;
 import com.apexguard.listeners.CombatListener;
 import com.apexguard.listeners.MovementListener;
+import com.apexguard.listeners.InventoryListener;
 import com.apexguard.player.PlayerData;
 import com.apexguard.player.ReplayBuffer;
 import org.bukkit.Bukkit;
@@ -34,6 +35,7 @@ public final class PlayerManager implements Listener {
         Bukkit.getPluginManager().registerEvents(this, plugin);
         Bukkit.getPluginManager().registerEvents(new MovementListener(this, checkRegistry), plugin);
         Bukkit.getPluginManager().registerEvents(new CombatListener(this, checkRegistry), plugin);
+        Bukkit.getPluginManager().registerEvents(new InventoryListener(this, checkRegistry), plugin);
         checkRegistry.attachPlayerManager(this);
     }
 
