@@ -19,6 +19,12 @@ public final class PlayerData implements AutoCloseable {
 
     private volatile long lastClickMs;
 
+    // Use/place
+    private final RollingLongWindow useIntervalsMs = new RollingLongWindow(80);
+    private final RollingLongWindow placeIntervalsMs = new RollingLongWindow(80);
+    private volatile long lastUseMs;
+    private volatile long lastPlaceMs;
+
     public PlayerData(UUID uuid, ConfigManager config) {
         this.uuid = uuid;
         int window = Math.max(100, config.profileInt("AutoClicker", "window-ms", 6000) / 50);
@@ -39,6 +45,13 @@ public final class PlayerData implements AutoCloseable {
 
     public long getLastClickMs() { return lastClickMs; }
     public void setLastClickMs(long ts) { this.lastClickMs = ts; }
+
+    public RollingLongWindow getUseIntervalsMs() { return useIntervalsMs; }
+    public RollingLongWindow getPlaceIntervalsMs() { return placeIntervalsMs; }
+    public long getLastUseMs() { return lastUseMs; }
+    public void setLastUseMs(long ts) { this.lastUseMs = ts; }
+    public long getLastPlaceMs() { return lastPlaceMs; }
+    public void setLastPlaceMs(long ts) { this.lastPlaceMs = ts; }
 
     @Override
     public void close() {

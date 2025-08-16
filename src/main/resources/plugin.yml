@@ -10,6 +10,10 @@ commands:
     description: ApexGuard administration command
     usage: /<command> <subcommand>
     permission: apexguard.admin
+  agstats:
+    description: Show per-player ApexGuard stats
+    usage: /<command> [player]
+    permission: apexguard.admin
 permissions:
   apexguard.admin:
     description: Allows use of ApexGuard admin commands

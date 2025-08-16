@@ -44,6 +44,7 @@ public final class ApexGuardPlugin extends JavaPlugin {
         final ApexGuardCommand command = new ApexGuardCommand(apexGuard);
         getCommand("apexguard").setExecutor(command);
         getCommand("apexguard").setTabCompleter(command);
+        getCommand("agstats").setExecutor(new com.apexguard.commands.StatsCommand(apexGuard));
     }
 
     @Override

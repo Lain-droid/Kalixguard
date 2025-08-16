@@ -34,6 +34,7 @@ public final class CheckRegistry {
         checks.add(new com.apexguard.checks.movement.SpeedCheck(configManager, actionEngine, jsonLogger));
         checks.add(new com.apexguard.checks.packet.PacketFloodCheck(configManager, actionEngine, jsonLogger));
         checks.add(new com.apexguard.checks.packet.KeepAliveSpoofCheck(configManager, actionEngine, jsonLogger));
+        checks.add(new com.apexguard.checks.inventory.FastUsePlaceCheck(configManager, actionEngine, jsonLogger));
     }
 
     public void onPacketAsync(PlayerData data, PacketView packet) {
