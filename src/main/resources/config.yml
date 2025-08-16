@@ -1,0 +1,97 @@
+general:
+  profile: safe_default
+  verbose-default: false
+  json-logging: true
+  replay-seconds: 12
+  max-replay-bytes-per-player: 1048576
+  actions:
+    flag-threshold: 5
+    warn-threshold: 15
+    slow-threshold: 25
+    kick-threshold: 45
+    ban-enabled: false
+
+performance:
+  worker-threads: -1  # -1 -> cores-1
+  max-queue: 32768
+  adaptive:
+    tps-low: 18.5
+    relax-factor: 1.35
+
+network:
+  keepalive-metrics: true
+  baseline-samples: 40
+  ewma-alpha: 0.25
+  max-packet-burst: 450  # per 5s window (adaptive)
+
+profiles:
+  safe_default:
+    checks:
+      AutoClicker:
+        enabled: true
+        min-cps: 10.5
+        cv-threshold: 0.055
+        iid-p-value: 0.0005
+        window-ms: 6000
+      AimAssist:
+        enabled: true
+        min-rotations: 60
+        gcd-consistency: 0.985
+        jitter-zscore: 3.5
+      Speed:
+        enabled: true
+        buffer-ticks: 8
+        z-threshold: 4.0
+      PacketFlood:
+        enabled: true
+        per-second: 145
+        burst-5s: 380
+      KeepAliveSpoof:
+        enabled: true
+        min-rtt-ms: 25
+        negative-rtt-allowance-ms: 2
+  aggressive_qa:
+    inherit: safe_default
+    checks:
+      AutoClicker:
+        min-cps: 9.5
+        cv-threshold: 0.045
+      AimAssist:
+        gcd-consistency: 0.992
+        jitter-zscore: 3.2
+      Speed:
+        z-threshold: 3.3
+      PacketFlood:
+        per-second: 125
+        burst-5s: 320
+  tournament_strict:
+    inherit: aggressive_qa
+    checks:
+      AutoClicker:
+        min-cps: 8.5
+        cv-threshold: 0.035
+      AimAssist:
+        gcd-consistency: 0.996
+        jitter-zscore: 3.0
+      Speed:
+        z-threshold: 2.9
+      PacketFlood:
+        per-second: 110
+        burst-5s: 280
+
+logging:
+  per-player-file: false
+  max-file-size-mb: 64
+  rotate: true
+
+replay:
+  redact-payloads: true
+
+compatibility:
+  require-protocollib: false
+  geyser-floodgate-aware: true
+
+self_protection:
+  anti-debug: true
+  integrity-scan: true
+  block-reflection: false
