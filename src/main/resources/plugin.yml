@@ -1,0 +1,16 @@
+name: ApexGuard
+main: com.apexguard.ApexGuardPlugin
+version: 0.1.0
+api-version: 1.13
+softdepend: [ProtocolLib]
+authors: ["ApexGuard Team"]
+website: https://example.org
+commands:
+  apexguard:
+    description: ApexGuard administration command
+    usage: /<command> <subcommand>
+    permission: apexguard.admin
+permissions:
+  apexguard.admin:
+    description: Allows use of ApexGuard admin commands
+    default: op
