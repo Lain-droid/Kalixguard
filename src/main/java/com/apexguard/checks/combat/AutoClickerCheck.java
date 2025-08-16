@@ -41,6 +41,11 @@ public final class AutoClickerCheck implements Check {
         evaluate(data);
     }
 
+    @Override
+    public void handleTickSync(PlayerData data) {
+        evaluate(data);
+    }
+
     private void evaluate(PlayerData data) {
         if (!config.profileBool(name(), "enabled", true)) return;
         long[] intervals = data.getClickIntervalsMs().toArray();

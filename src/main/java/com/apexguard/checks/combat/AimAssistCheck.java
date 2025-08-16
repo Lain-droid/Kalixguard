@@ -33,6 +33,11 @@ public final class AimAssistCheck implements Check {
         // Packet decoding omitted in scaffold
     }
 
+    @Override
+    public void handleTickSync(PlayerData data) {
+        evaluate(data);
+    }
+
     private void evaluate(PlayerData data) {
         if (!config.profileBool(name(), "enabled", true)) return;
         double[] yaw = data.getYawDeltas().toArray();

@@ -33,6 +33,11 @@ public final class SpeedCheck implements Check {
         // Without decoding positions, we can't compute speed here. In real impl, parse positions.
     }
 
+    @Override
+    public void handleTickSync(PlayerData data) {
+        evaluate(data);
+    }
+
     private void evaluate(PlayerData data) {
         if (!config.profileBool(name(), "enabled", true)) return;
         double[] speeds = data.getHorizontalSpeed().toArray();
