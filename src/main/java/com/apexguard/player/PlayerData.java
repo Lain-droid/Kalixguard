@@ -148,7 +148,10 @@ public final class PlayerData {
         
         // Initialize ML components
         this.anomalyDetector = new AnomalyDetector();
-        this.currentFeatures = new FeatureVector.Builder().build();
+        this.currentFeatures = new FeatureVector.Builder()
+            .playerId(uuid.toString())
+            .timestamp(joinTime)
+            .build();
         
         // Initialize tracking maps
         this.violations = new ConcurrentHashMap<>();
