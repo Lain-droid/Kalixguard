@@ -48,7 +48,7 @@ public final class AutoClickerCheck implements Check {
 
     private void evaluate(PlayerData data) {
         if (!config.profileBool(name(), "enabled", true)) return;
-        long[] intervals = data.getClickIntervalsMs().toArray();
+        long[] intervals = data.getClickIntervalsMs().stream().mapToLong(Long::longValue).toArray();
         if (intervals.length < 20) return;
 
         double mean = 0.0;
@@ -60,7 +60,7 @@ public final class AutoClickerCheck implements Check {
         double std = Math.sqrt(variance);
 
         double cps = 1000.0 / Math.max(1.0, mean);
-        double cv = Stats.coefficientOfVariation(mean, std);
+        double cv = Stats.coefficientOfVariation(intervals);
 
         double minCps = config.profileDouble(name(), "min-cps", 10.5);
         double cvTh = config.profileDouble(name(), "cv-threshold", 0.055);

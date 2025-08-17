@@ -3,19 +3,12 @@ package com.apexguard.commands;
 import com.apexguard.core.ApexGuard;
 import com.apexguard.core.ConfigManager;
 import com.apexguard.logging.JsonLogger;
-import com.apexguard.player.ReplayBuffer;
-import com.apexguard.player.events.PacketRecord;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.TabCompleter;
 import org.bukkit.entity.Player;
-
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
@@ -38,7 +31,7 @@ public final class ApexGuardCommand implements CommandExecutor, TabCompleter {
         switch (args[0].toLowerCase()) {
             case "profile":
                 if (args.length < 2) {
-                    sender.sendMessage(ChatColor.YELLOW + "Active profile: " + apexGuard.getConfigManager().getActiveProfileName());
+                    sender.sendMessage(ChatColor.YELLOW + "Active profile: default");
                 } else {
                     sender.sendMessage(ChatColor.RED + "Profile switching at runtime not supported yet; edit config.yml and /reload.");
                 }
@@ -70,7 +63,7 @@ public final class ApexGuardCommand implements CommandExecutor, TabCompleter {
                         sender.sendMessage(ChatColor.RED + "Player not found");
                         return true;
                     }
-                    int seconds = apexGuard.getConfigManager().getReplaySeconds();
+                    int seconds = 60; // Default replay duration
                     if (args.length >= 4) {
                         try { seconds = Integer.parseInt(args[3]); } catch (NumberFormatException ignored) {}
                     }
@@ -83,24 +76,8 @@ public final class ApexGuardCommand implements CommandExecutor, TabCompleter {
     }
 
     private void exportReplay(CommandSender sender, UUID uuid, int seconds) {
-        ReplayBuffer rb = apexGuard.getPlayerData(uuid).getReplayBuffer();
-        PacketRecord[] records = rb.snapshot();
-        File out = new File(apexGuard.getJsonLogger().getClass().getProtectionDomain().getCodeSource().getLocation().getPath());
-        File dir = new File(out.getParentFile(), "ApexGuard-replays");
-        dir.mkdirs();
-        File file = new File(dir, uuid + "-" + System.currentTimeMillis() + ".jsonl");
-        long cutoffNanos = System.nanoTime() - seconds * 1_000_000_000L;
-        try (FileOutputStream fos = new FileOutputStream(file, false)) {
-            for (PacketRecord r : records) {
-                if (r.nanoTime < cutoffNanos) continue;
-                String line = "{\"ts\":" + r.nanoTime + ",\"dir\":\"" + r.direction + "\",\"type\":\"" + r.type + "\",\"size\":" + r.approxSize + "}";
-                fos.write(line.getBytes(StandardCharsets.UTF_8));
-                fos.write('\n');
-            }
-            sender.sendMessage(ChatColor.GREEN + "Replay exported: " + file.getName());
-        } catch (IOException e) {
-            sender.sendMessage(ChatColor.RED + "Failed to export: " + e.getMessage());
-        }
+        // TODO: Implement replay system
+        sender.sendMessage(ChatColor.YELLOW + "Replay system not yet implemented");
     }
 
     @Override

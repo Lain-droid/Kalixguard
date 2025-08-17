@@ -30,8 +30,8 @@ public final class FastUsePlaceCheck implements Check {
     @Override
     public void handleTickSync(PlayerData data) {
         if (!config.profileBool(name(), "enabled", true)) return;
-        long[] use = data.getUseIntervalsMs().toArray();
-        long[] place = data.getPlaceIntervalsMs().toArray();
+        long[] use = data.getUseIntervalsMs().stream().mapToLong(Long::longValue).toArray();
+        long[] place = data.getPlaceIntervalsMs().stream().mapToLong(Long::longValue).toArray();
         evaluate(data, use, "use");
         evaluate(data, place, "place");
     }
