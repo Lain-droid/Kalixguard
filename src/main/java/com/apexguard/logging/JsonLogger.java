@@ -5,9 +5,10 @@ import org.bukkit.plugin.Plugin;
 
 import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.StandardOpenOption;
 import java.time.Instant;
 import java.util.Map;
 import java.util.Set;
@@ -29,7 +30,13 @@ public final class JsonLogger implements AutoCloseable {
         this.file = new File(plugin.getDataFolder(), "apexguard.log.jsonl");
         try {
             plugin.getDataFolder().mkdirs();
-            this.writer = new BufferedWriter(new FileWriter(file, StandardCharsets.UTF_8, true));
+            this.writer = Files.newBufferedWriter(
+                    file.toPath(),
+                    StandardCharsets.UTF_8,
+                    StandardOpenOption.CREATE,
+                    StandardOpenOption.WRITE,
+                    StandardOpenOption.APPEND
+            );
         } catch (IOException e) {
             plugin.getLogger().warning("Failed to open log file: " + e.getMessage());
         }
@@ -39,10 +46,14 @@ public final class JsonLogger implements AutoCloseable {
         if (value) verbosePlayers.add(uuid); else verbosePlayers.remove(uuid);
     }
 
-    public boolean isVerbose(UUID uuid) { return verbosePlayers.contains(uuid) || configManager.profileBool("general", "debug", false); }
+    public boolean isVerbose(UUID uuid) {
+        return verbosePlayers.contains(uuid) || plugin.getConfig().getBoolean("general.debug", false);
+    }
 
     public synchronized void log(Map<String, Object> event) {
-        if (!configManager.profileBool("general", "log-level", true) || writer == null) return;
+        if (writer == null) return;
+        String level = plugin.getConfig().getString("general.log-level", "INFO");
+        if (level != null && level.equalsIgnoreCase("OFF")) return;
         try {
             writer.write(toJson(event));
             writer.write('\n');

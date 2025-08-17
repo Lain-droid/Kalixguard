@@ -2,6 +2,14 @@ plugins {
 	java
 }
 
+group = "com.apexguard"
+version = "1.0.0"
+description = "ApexGuard Anti-Cheat"
+
+val includeProtocolLib: Boolean = (findProperty("includeProtocolLib") as String?)?.toBoolean()
+	?: System.getenv("INCLUDE_PROTOCOL_LIB")?.toBoolean()
+	?: false
+
 java {
 	toolchain {
 		languageVersion.set(JavaLanguageVersion.of(21))
@@ -13,10 +21,15 @@ repositories {
 	maven("https://repo.papermc.io/repository/maven-public/")
 	maven("https://repo.codemc.io/repository/maven-public/")
 	maven("https://jitpack.io")
+	maven("https://repo.dmulloy2.net/repository/public/")
 }
 
 dependencies {
 	compileOnly("io.papermc.paper:paper-api:1.20.6-R0.1-SNAPSHOT")
+	
+	// Adventure API for rich text components
+	compileOnly("net.kyori:adventure-api:4.14.0")
+	compileOnly("net.kyori:adventure-text-serializer-legacy:4.14.0")
 	
 	// Core dependencies
 	implementation("com.google.guava:guava:32.1.3-jre")
@@ -36,7 +49,9 @@ dependencies {
 	implementation("com.zaxxer:HikariCP:5.0.1")
 	
 	// Protocol handling (optional - will be loaded at runtime if available)
-	// compileOnly("com.comphenix.protocol:ProtocolLib:5.1.0")
+	if (includeProtocolLib) {
+		compileOnly("com.comphenix.protocol:ProtocolLib:4.8.0")
+	}
 	
 	// Metrics and monitoring
 	implementation("io.micrometer:micrometer-core:1.12.2")
@@ -54,8 +69,21 @@ dependencies {
 sourceSets {
 	main {
 		java {
-			exclude("com/apexguard/network/ProtocolLib*.java")
+			if (!includeProtocolLib) {
+				exclude("com/apexguard/network/ProtocolLib*.java")
+			}
 		}
+	}
+}
+
+// Expand plugin.yml with project properties
+tasks.processResources {
+	filesMatching("plugin.yml") {
+		expand(mapOf(
+			"project" to mapOf(
+				"version" to project.version
+			)
+		))
 	}
 }
 

@@ -5,6 +5,7 @@ import com.apexguard.core.ApexGuard;
 import com.apexguard.core.ConfigManager;
 import com.apexguard.core.PlayerManager;
 import com.apexguard.core.TaskEngine;
+import com.apexguard.logging.Console;
 import com.apexguard.network.ProtocolBridge;
 // import com.apexguard.network.ProtocolLibBridge;
 import org.bukkit.Bukkit;
@@ -16,7 +17,7 @@ public final class ApexGuardPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        getServer().getConsoleSender().sendMessage("§5[ApexGuard] Starting...");
+        Console.info(getServer().getConsoleSender(), "&d[ApexGuard] &7Starting...");
         saveDefaultConfig();
 
         final ConfigManager configManager = new ConfigManager(this);
@@ -28,30 +29,26 @@ public final class ApexGuardPlugin extends JavaPlugin {
         if (protocolLib != null && protocolLib.isEnabled()) {
             try {
                 Class.forName("com.apexguard.network.ProtocolLibBridge");
-            } catch (ClassNotFoundException cnf) {
-                getLogger().info("ProtocolLib detected but bridge not bundled; running without packet capture.");
-            }
-            try {
                 Class<?> bridgeClass = Class.forName("com.apexguard.network.ProtocolLibBridge");
                 protocolBridge = (ProtocolBridge) bridgeClass
                         .getConstructor(JavaPlugin.class, TaskEngine.class, PlayerManager.class, ConfigManager.class)
                         .newInstance(this, taskEngine, playerManager, configManager);
-                getLogger().info("ProtocolLib detected, packet-level features enabled.");
-            } catch (ClassNotFoundException ignored) {
-                // already logged above
+                Console.success(getServer().getConsoleSender(), "&aProtocolLib detected, packet-level features enabled.");
+            } catch (ClassNotFoundException cnf) {
+                Console.warn(getServer().getConsoleSender(), "&eProtocolLib detected but bridge not bundled; running without packet capture.");
             } catch (Throwable t) {
-                getLogger().warning("ProtocolLib present but bridge failed to initialize; running without packet capture: " + t.getClass().getSimpleName());
+                Console.error(getServer().getConsoleSender(), "&cProtocolLib present but bridge failed to initialize: " + t.getClass().getSimpleName());
             }
         } else {
-            getLogger().info("ProtocolLib not present; running in API-only mode with reduced detection.");
+            Console.warn(getServer().getConsoleSender(), "&eProtocolLib not present; running in API-only mode with reduced detection.");
         }
 
         this.apexGuard = new ApexGuard(this, configManager, taskEngine, playerManager, protocolBridge);
         try {
             this.apexGuard.start();
-            getServer().getConsoleSender().sendMessage("§5[ApexGuard] Apex başarıyla çalıştı");
+            Console.success(getServer().getConsoleSender(), "&d[ApexGuard] &aApex başarıyla çalıştı");
         } catch (Throwable t) {
-            getServer().getConsoleSender().sendMessage("§c[ApexGuard] Başlatma hatası: " + t.getClass().getSimpleName());
+            Console.error(getServer().getConsoleSender(), "&c[ApexGuard] Başlatma hatası: " + t.getClass().getSimpleName());
             throw t;
         }
 

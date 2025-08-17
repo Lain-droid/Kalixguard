@@ -10,10 +10,10 @@ public final class TaskEngine {
     private final ExecutorService executor;
 
     public TaskEngine(final ConfigManager configManager) {
-        int configured = configManager.profileInt("performance", "max-threads", 0);
+        int configured = configManager.getMaxThreads();
         int cores = Math.max(2, Runtime.getRuntime().availableProcessors());
         int threads = configured > 0 ? configured : Math.max(2, cores - 1);
-        int maxQueue = Math.max(8192, configManager.profileInt("performance", "queue-size", 8192));
+        int maxQueue = Math.max(8192, configManager.getQueueSize());
 
         ThreadFactory factory = r -> {
             Thread t = new Thread(r, "ApexGuard-Worker");
