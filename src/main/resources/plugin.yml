@@ -1,6 +1,6 @@
 name: ApexGuard
 main: com.apexguard.ApexGuardPlugin
-version: 1.0.1
+version: 1.0.2
 api-version: 1.13
 softdepend: [ProtocolLib]
 authors: ["ApexGuard Team"]

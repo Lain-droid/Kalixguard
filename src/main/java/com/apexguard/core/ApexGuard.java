@@ -6,6 +6,7 @@ import com.apexguard.checks.registry.CheckRegistry;
 import com.apexguard.logging.JsonLogger;
 import com.apexguard.selfprotect.AntiDebug;
 import com.apexguard.selfprotect.IntegrityScanner;
+import com.apexguard.physics.PhysicsEngine;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.Plugin;
@@ -24,6 +25,7 @@ public final class ApexGuard {
     private final JsonLogger jsonLogger;
     private final IntegrityScanner integrityScanner;
     private final AntiDebug antiDebug;
+    private final PhysicsEngine physicsEngine;
 
     public ApexGuard(final Plugin plugin,
                      final ConfigManager configManager,
@@ -41,6 +43,7 @@ public final class ApexGuard {
         this.checkRegistry = new CheckRegistry(configManager, actionEngine, jsonLogger);
         this.integrityScanner = new IntegrityScanner(plugin, configManager);
         this.antiDebug = new AntiDebug(plugin, configManager);
+        this.physicsEngine = new PhysicsEngine();
     }
 
     public void start() {
@@ -51,7 +54,6 @@ public final class ApexGuard {
         integrityScanner.start(taskEngine);
         antiDebug.scanAtStartup();
 
-        // Prime online players (e.g., on /reload)
         for (Player player : Bukkit.getOnlinePlayers()) {
             playerManager.initializePlayer(player.getUniqueId());
         }
@@ -76,4 +78,5 @@ public final class ApexGuard {
     public ActionEngine getActionEngine() { return actionEngine; }
     public CheckRegistry getCheckRegistry() { return checkRegistry; }
     public JsonLogger getJsonLogger() { return jsonLogger; }
+    public PhysicsEngine getPhysicsEngine() { return physicsEngine; }
 }

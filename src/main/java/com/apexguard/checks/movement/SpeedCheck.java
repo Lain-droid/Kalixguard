@@ -48,9 +48,18 @@ public final class SpeedCheck implements Check {
         double latest = speeds[speeds.length - 1];
         double z = Stats.zScore(latest, mean, std);
         double zTh = config.profileDouble(name(), "z-threshold", 4.0);
+        // Environment-aware relaxation
+        double relax = 1.0;
+        try {
+            org.bukkit.entity.Player p = org.bukkit.Bukkit.getPlayer(data.getUuid());
+            if (p != null) {
+                relax = new com.apexguard.physics.PhysicsEngine().computeRelaxMultiplier(p);
+            }
+        } catch (Throwable ignored) {}
+        zTh *= relax;
         if (z >= zTh) {
-            double sev = z - zTh;
-            actions.flag(data.getUuid(), new FlagContext(name(), category(), sev).with("z", z));
+            double sev = (z - zTh) / Math.max(1.0, relax);
+            actions.flag(data.getUuid(), new FlagContext(name(), category(), sev).with("z", z).with("relax", relax));
         }
     }
 }

@@ -16,6 +16,7 @@ public final class ApexGuardPlugin extends JavaPlugin {
 
     @Override
     public void onEnable() {
+        getServer().getConsoleSender().sendMessage("§5[ApexGuard] Starting...");
         saveDefaultConfig();
 
         final ConfigManager configManager = new ConfigManager(this);
@@ -46,7 +47,13 @@ public final class ApexGuardPlugin extends JavaPlugin {
         }
 
         this.apexGuard = new ApexGuard(this, configManager, taskEngine, playerManager, protocolBridge);
-        this.apexGuard.start();
+        try {
+            this.apexGuard.start();
+            getServer().getConsoleSender().sendMessage("§5[ApexGuard] Apex başarıyla çalıştı");
+        } catch (Throwable t) {
+            getServer().getConsoleSender().sendMessage("§c[ApexGuard] Başlatma hatası: " + t.getClass().getSimpleName());
+            throw t;
+        }
 
         final ApexGuardCommand command = new ApexGuardCommand(apexGuard);
         getCommand("apexguard").setExecutor(command);
