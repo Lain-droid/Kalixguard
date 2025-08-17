@@ -3,7 +3,7 @@ plugins {
 }
 
 group = "com.apexguard"
-version = "1.0.3"
+version = "1.0.4"
 description = "ApexGuard Anti-Cheat"
 
 val includeProtocolLib: Boolean = (findProperty("includeProtocolLib") as String?)?.toBoolean()

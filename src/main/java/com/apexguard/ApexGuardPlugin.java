@@ -28,10 +28,9 @@ public final class ApexGuardPlugin extends JavaPlugin {
         final Plugin protocolLib = Bukkit.getPluginManager().getPlugin("ProtocolLib");
         if (protocolLib != null && protocolLib.isEnabled()) {
             try {
-                Class.forName("com.apexguard.network.ProtocolLibBridge");
                 Class<?> bridgeClass = Class.forName("com.apexguard.network.ProtocolLibBridge");
                 protocolBridge = (ProtocolBridge) bridgeClass
-                        .getConstructor(JavaPlugin.class, TaskEngine.class, PlayerManager.class, ConfigManager.class)
+                        .getDeclaredConstructor(Plugin.class, TaskEngine.class, PlayerManager.class, ConfigManager.class)
                         .newInstance(this, taskEngine, playerManager, configManager);
                 Console.success(getServer().getConsoleSender(), "&aProtocolLib detected, packet-level features enabled.");
             } catch (ClassNotFoundException cnf) {
