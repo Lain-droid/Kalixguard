@@ -22,7 +22,6 @@ repositories {
 	maven("https://repo.codemc.io/repository/maven-public/")
 	maven("https://repo.codemc.org/repository/maven-public/")
 	maven("https://jitpack.io")
-	maven("https://repo.dmulloy2.net/repository/public/")
 }
 
 dependencies {

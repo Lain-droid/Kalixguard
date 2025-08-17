@@ -83,7 +83,7 @@ public final class ProtocolLibBridge implements ProtocolBridge {
                 replay.append(record, configManager.getMaxReplayBytesPerPlayer());
 
                 final PacketContainer clone = packet.shallowClone();
-                taskEngine.submit(() -> registry.onPacketAsync(data, clone));
+                taskEngine.submit(() -> registry.onPacketAsync(data, new ProtocolLibAdapter(clone, direction == PacketDirection.CLIENTBOUND)));
             }
         });
     }
