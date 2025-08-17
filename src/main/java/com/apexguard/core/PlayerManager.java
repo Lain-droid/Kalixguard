@@ -5,7 +5,7 @@ import com.apexguard.listeners.CombatListener;
 import com.apexguard.listeners.MovementListener;
 import com.apexguard.listeners.InventoryListener;
 import com.apexguard.player.PlayerData;
-import com.apexguard.player.ReplayBuffer;
+
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -40,17 +40,17 @@ public final class PlayerManager implements Listener {
     }
 
     public void initializePlayer(UUID uuid) {
-        players.computeIfAbsent(uuid, id -> new PlayerData(id, configManager));
+        players.computeIfAbsent(uuid, id -> new PlayerData(id));
     }
 
     public PlayerData getPlayerData(UUID uuid) {
-        return players.computeIfAbsent(uuid, id -> new PlayerData(id, configManager));
+        return players.computeIfAbsent(uuid, id -> new PlayerData(id));
     }
 
     public void removePlayer(UUID uuid) {
         PlayerData data = players.remove(uuid);
         if (data != null) {
-            data.close();
+            data.cleanup();
         }
     }
 
@@ -66,14 +66,14 @@ public final class PlayerManager implements Listener {
 
     public void shutdown() {
         for (PlayerData data : players.values()) {
-            data.close();
+            data.cleanup();
         }
         players.clear();
     }
 
-    public ReplayBuffer getReplay(UUID uuid) {
-        PlayerData data = getPlayerData(uuid);
-        return data.getReplayBuffer();
+    // TODO: Implement replay system
+    public void getReplay(UUID uuid) {
+        // Replay system will be implemented separately
     }
 
     public Player getOnline(UUID uuid) {

@@ -40,7 +40,7 @@ public final class AimAssistCheck implements Check {
 
     private void evaluate(PlayerData data) {
         if (!config.profileBool(name(), "enabled", true)) return;
-        double[] yaw = data.getYawDeltas().toArray();
+        double[] yaw = data.getYawDeltas().stream().mapToDouble(Double::doubleValue).toArray();
         if (yaw.length < 40) return;
         double mean = 0.0; for (double v : yaw) mean += v; mean /= yaw.length;
         double var = 0.0; for (double v : yaw) var += (v - mean) * (v - mean); var /= yaw.length;

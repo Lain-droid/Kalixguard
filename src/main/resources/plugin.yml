@@ -1,20 +1,251 @@
 name: ApexGuard
+version: '${project.version}'
 main: com.apexguard.ApexGuardPlugin
-version: 1.0.2
-api-version: 1.13
-softdepend: [ProtocolLib]
-authors: ["ApexGuard Team"]
-website: https://example.org
+api-version: '1.20'
+authors: [ApexGuard Team]
+description: |
+  Advanced anti-cheat system with ML-powered detection, comprehensive movement analysis,
+  and sophisticated cheat prevention. Features include:
+  
+  - Advanced movement detection (Fly/Glide, Jesus/LiquidWalk, Phase/NoClip, Timer/Blink)
+  - Combat analysis (MultiAura, AimBot detection, AutoBlock, Velocity manipulation)
+  - Inventory protection (NoSlow, Scaffold, XCarry, Ghost hand detection)
+  - Exploit prevention (BookBan, NBT validation, PacketFlood protection)
+  - Client fingerprinting and spoof detection
+  - Network analysis with RTT modeling and lag spoof detection
+  - Physics-based validation with environment awareness
+  - Machine learning anomaly detection
+  - Cross-check correlation and risk scoring
+  - Performance optimization with lock-free algorithms
+  - Multi-instance support with Redis
+  - Comprehensive admin tools and analytics
+  
+  Designed to catch sophisticated cheats while minimizing false positives.
+  
+  For support and documentation, visit: https://github.com/apexguard/apexguard
+
+website: https://github.com/apexguard/apexguard
+support: https://github.com/apexguard/apexguard/issues
+
 commands:
   apexguard:
-    description: ApexGuard administration command
-    usage: /<command> <subcommand>
+    description: Main ApexGuard command
+    usage: /<command> [reload|status|stats|profile|debug]
+    aliases: [ag, apex]
     permission: apexguard.admin
   agstats:
-    description: Show per-player ApexGuard stats
-    usage: /<command> [player]
+    description: View anti-cheat statistics
+    usage: /<command> [player] [check]
+    aliases: [stats]
+    permission: apexguard.stats
+  agprofile:
+    description: Manage detection profiles
+    usage: /<command> [list|set|info] [profile]
+    aliases: [profile]
     permission: apexguard.admin
+  agcheck:
+    description: Manually run checks on a player
+    usage: /<command> <player> [check]
+    aliases: [check]
+    permission: apexguard.admin
+  agreplay:
+    description: View player replay data
+    usage: /<command> <player> [time]
+    aliases: [replay]
+    permission: apexguard.admin
+  agban:
+    description: Ban a player for cheating
+    usage: /<command> <player> [reason]
+    aliases: [ban]
+    permission: apexguard.ban
+  agkick:
+    description: Kick a player for suspicious behavior
+    usage: /<command> <player> [reason]
+    aliases: [kick]
+    permission: apexguard.kick
+  agwarn:
+    description: Warn a player
+    usage: /<command> <player> [message]
+    aliases: [warn]
+    permission: apexguard.warn
+  agslow:
+    description: Slow down a player's movement
+    usage: /<command> <player> [duration] [speed]
+    aliases: [slow]
+    permission: apexguard.slow
+  agunban:
+    description: Unban a player
+    usage: /<command> <player>
+    aliases: [unban]
+    permission: apexguard.unban
+  agwhitelist:
+    description: Manage whitelist
+    usage: /<command> [add|remove|list] [player]
+    aliases: [whitelist, wl]
+    permission: apexguard.whitelist
+  aglogs:
+    description: View anti-cheat logs
+    usage: /<command> [player] [check] [time]
+    aliases: [logs]
+    permission: apexguard.logs
+  agconfig:
+    description: Reload configuration
+    usage: /<command> [reload|save]
+    aliases: [config]
+    permission: apexguard.admin
+  agtest:
+    description: Test anti-cheat functionality
+    usage: /<command> [check] [player]
+    aliases: [test]
+    permission: apexguard.admin
+  agml:
+    description: Machine learning management
+    usage: /<command> [train|retrain|stats|reset]
+    aliases: [ml]
+    permission: apexguard.admin
+  agphysics:
+    description: Physics engine management
+    usage: /<command> [stats|reset|debug]
+    aliases: [physics]
+    permission: apexguard.admin
+  agnetwork:
+    description: Network analysis tools
+    usage: /<command> [analyze|stats|reset]
+    aliases: [network]
+    permission: apexguard.admin
+  agperformance:
+    description: Performance monitoring
+    usage: /<command> [stats|optimize|reset]
+    aliases: [perf]
+    permission: apexguard.admin
+  agredis:
+    description: Redis connection management
+    usage: /<command> [status|test|reset]
+    aliases: [redis]
+    permission: apexguard.admin
+  agexport:
+    description: Export data for analysis
+    usage: /<command> [player] [format] [time]
+    aliases: [export]
+    permission: apexguard.admin
+  agimport:
+    description: Import configuration or data
+    usage: /<command> [config|data] [file]
+    aliases: [import]
+    permission: apexguard.admin
+  agbackup:
+    description: Backup anti-cheat data
+    usage: /<command> [create|restore|list]
+    aliases: [backup]
+    permission: apexguard.admin
+  agrestore:
+    description: Restore from backup
+    usage: /<command> <backup>
+    aliases: [restore]
+    permission: apexguard.admin
+  agupdate:
+    description: Check for updates
+    usage: /<command> [check|download|install]
+    aliases: [update]
+    permission: apexguard.admin
+  aghelp:
+    description: Show help information
+    usage: /<command> [command]
+    aliases: [help]
+    permission: apexguard.help
+
 permissions:
-  apexguard.admin:
-    description: Allows use of ApexGuard admin commands
+  apexguard.*:
+    description: Gives access to all ApexGuard commands
+    children:
+      apexguard.admin: true
+      apexguard.stats: true
+      apexguard.ban: true
+      apexguard.kick: true
+      apexguard.warn: true
+      apexguard.slow: true
+      apexguard.unban: true
+      apexguard.whitelist: true
+      apexguard.logs: true
+      apexguard.help: true
     default: op
+  apexguard.admin:
+    description: Gives access to administrative ApexGuard commands
+    children:
+      apexguard.stats: true
+      apexguard.ban: true
+      apexguard.kick: true
+      apexguard.warn: true
+      apexguard.slow: true
+      apexguard.unban: true
+      apexguard.whitelist: true
+      apexguard.logs: true
+      apexguard.help: true
+    default: op
+  apexguard.stats:
+    description: Allows viewing anti-cheat statistics
+    default: op
+  apexguard.ban:
+    description: Allows banning players for cheating
+    default: op
+  apexguard.kick:
+    description: Allows kicking players for suspicious behavior
+    default: op
+  apexguard.warn:
+    description: Allows warning players
+    default: op
+  apexguard.slow:
+    description: Allows slowing down player movement
+    default: op
+  apexguard.unban:
+    description: Allows unbanning players
+    default: op
+  apexguard.whitelist:
+    description: Allows managing the whitelist
+    default: op
+  apexguard.logs:
+    description: Allows viewing anti-cheat logs
+    default: op
+  apexguard.help:
+    description: Allows viewing help information
+    default: true
+
+depend: []
+softdepend: [ProtocolLib, ViaVersion, Geyser, Floodgate, Velocity, Waterfall]
+
+# Plugin metadata
+libraries:
+  - com.google.guava:guava:32.1.3-jre
+  - com.fasterxml.jackson.core:jackson-databind:2.15.2
+  - org.apache.commons:commons-math3:3.6.1
+  - org.apache.commons:commons-lang3:3.12.0
+  - com.github.haifengl:smile-core:3.0.1
+  - redis.clients:jedis:5.0.2
+  - com.zaxxer:HikariCP:5.0.1
+  - io.micrometer:micrometer-core:1.12.2
+
+# Minimum Java version
+java-version: 21
+
+# Plugin features
+features:
+  - Advanced movement detection
+  - Combat analysis
+  - Inventory protection
+  - Exploit prevention
+  - Client fingerprinting
+  - Network analysis
+  - Physics validation
+  - Machine learning
+  - Cross-check correlation
+  - Performance optimization
+  - Multi-instance support
+  - Admin tools
+  - Analytics dashboard
+  - Replay system
+  - Auto-tuning
+  - Self-protection
+  - Multi-version support
+  - Bedrock compatibility
+  - Proxy awareness
+  - Redis integration

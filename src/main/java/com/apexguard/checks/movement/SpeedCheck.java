@@ -40,7 +40,7 @@ public final class SpeedCheck implements Check {
 
     private void evaluate(PlayerData data) {
         if (!config.profileBool(name(), "enabled", true)) return;
-        double[] speeds = data.getHorizontalSpeed().toArray();
+        double[] speeds = data.getHorizontalSpeed().stream().mapToDouble(Double::doubleValue).toArray();
         if (speeds.length < 20) return;
         double mean = 0.0; for (double v : speeds) mean += v; mean /= speeds.length;
         double var = 0.0; for (double v : speeds) var += (v - mean) * (v - mean); var /= speeds.length;

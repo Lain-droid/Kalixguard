@@ -1,100 +1,1400 @@
+# ApexGuard Anti-Cheat Configuration
+# Advanced anti-cheat system with ML-powered detection
+
 general:
-  profile: safe_default
-  verbose-default: false
-  json-logging: true
-  replay-seconds: 12
-  max-replay-bytes-per-player: 1048576
-  actions:
-    flag-threshold: 5
-    warn-threshold: 15
-    slow-threshold: 25
-    kick-threshold: 45
-    ban-enabled: false
-
-performance:
-  worker-threads: -1  # -1 -> cores-1
-  max-queue: 32768
-  adaptive:
-    tps-low: 18.5
-    relax-factor: 1.35
-
-network:
-  keepalive-metrics: true
-  baseline-samples: 40
-  ewma-alpha: 0.25
-  max-packet-burst: 450  # per 5s window (adaptive)
-
-profiles:
+  debug: false
+  log-level: "INFO"
+  auto-save-interval: 300
+  
+detection:
+  enabled: true
+  max-violations: 50
+  violation-decay: 0.95
+  risk-threshold: 0.8
+  
+actions:
+  kick:
+    enabled: true
+    threshold: 45
+    message: "&cYou have been kicked for suspicious behavior."
+  ban:
+    enabled: true
+    threshold: 50
+    message: "&cYou have been banned for cheating."
+  warn:
+    enabled: true
+    threshold: 15
+    message: "&eWarning: Suspicious behavior detected."
+  slow:
+    enabled: true
+    threshold: 25
+    message: "&eYour movement has been slowed due to suspicious behavior."
+    
+physics:
+  enabled: true
+  max-reach: 6.0
+  max-speed: 0.8
+  gravity: 0.08
+  
+ml:
+  enabled: true
+  learning-rate: 0.01
+  batch-size: 100
+  epochs: 1000
+  
+# Detection profiles for different server types
+detection-profiles:
   safe_default:
-    checks:
-      AutoClicker:
-        enabled: true
-        min-cps: 10.5
-        cv-threshold: 0.055
-        iid-p-value: 0.0005
-        window-ms: 6000
-      AimAssist:
-        enabled: true
-        min-rotations: 60
-        gcd-consistency: 0.985
-        jitter-zscore: 3.5
-      Speed:
-        enabled: true
-        buffer-ticks: 8
-        z-threshold: 4.0
-      PacketFlood:
-        enabled: true
-        per-second: 145
-        burst-5s: 380
-      KeepAliveSpoof:
-        enabled: true
-        min-rtt-ms: 25
-        negative-rtt-allowance-ms: 2
-      Reach:
-        enabled: true
-        tolerance: 0.2
+    enabled: true
+    aggressive: false
+    threshold: 0.8
+    cooldown: 5000
+    
   aggressive_qa:
-    inherit: safe_default
-    checks:
-      AutoClicker:
-        min-cps: 9.5
-        cv-threshold: 0.045
-      AimAssist:
-        gcd-consistency: 0.992
-        jitter-zscore: 3.2
-      Speed:
-        z-threshold: 3.3
-      PacketFlood:
-        per-second: 125
-        burst-5s: 320
+    enabled: true
+    aggressive: true
+    threshold: 0.6
+    cooldown: 2000
+    
   tournament_strict:
-    inherit: aggressive_qa
-    checks:
-      AutoClicker:
-        min-cps: 8.5
-        cv-threshold: 0.035
-      AimAssist:
-        gcd-consistency: 0.996
-        jitter-zscore: 3.0
-      Speed:
-        z-threshold: 2.9
-      PacketFlood:
-        per-second: 110
-        burst-5s: 280
+    enabled: true
+    aggressive: true
+    threshold: 0.4
+    cooldown: 1000
+    
+# Physics profiles for different environments
+physics-profiles:
+  default:
+    friction: 0.6
+    traction: 0.8
+    max-speed: 0.8
+    max-reach: 6.0
+    
+  ice:
+    friction: 0.3
+    traction: 0.4
+    max-speed: 1.2
+    max-reach: 6.0
+    
+  water:
+    friction: 0.8
+    traction: 0.6
+    max-speed: 1.0
+    max-reach: 6.0
+    
+# Machine learning profiles
+ml-profiles:
+  default:
+    learning-rate: 0.01
+    batch-size: 100
+    epochs: 1000
+    auto-tune: true
+    
+  fast:
+    learning-rate: 0.05
+    batch-size: 50
+    epochs: 500
+    auto-tune: true
+    
+  accurate:
+    learning-rate: 0.005
+    batch-size: 200
+    epochs: 2000
+    auto-tune: true
 
-logging:
-  per-player-file: false
-  max-file-size-mb: 64
-  rotate: true
+# Redis configuration for multi-instance support
+redis:
+  enabled: false
+  host: "localhost"
+  port: 6379
+  password: ""
+  database: 0
+  timeout: 2000
+  max-connections: 10
 
-replay:
-  redact-payloads: true
+# Performance settings
+performance:
+  max-threads: 8
+  batch-size: 50
+  queue-size: 1000
+  memory-limit: 512
 
-compatibility:
-  require-protocollib: false
-  geyser-floodgate-aware: true
-
-self_protection:
-  anti-debug: true
-  integrity-scan: true
-  block-reflection: false
+# Check-specific configurations
+checks:
+  Speed:
+    enabled: true
+    threshold: 4.0
+    max-violations: 20
+    cooldown: 1000
+    
+  Fly:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  NoFall:
+    enabled: true
+    threshold: 3.5
+    max-violations: 15
+    cooldown: 1500
+    
+  Jesus:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Phase:
+    enabled: true
+    threshold: 2.5
+    max-violations: 10
+    cooldown: 3000
+    
+  Timer:
+    enabled: true
+    threshold: 3.5
+    max-violations: 20
+    cooldown: 1000
+    
+  Strafe:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  ElytraFly:
+    enabled: true
+    threshold: 3.5
+    max-violations: 15
+    cooldown: 2000
+    
+  BoatSpeed:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Step:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Spider:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  MultiAura:
+    enabled: true
+    threshold: 3.5
+    max-violations: 20
+    cooldown: 1000
+    
+  HitSelect:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  AimBot:
+    enabled: true
+    threshold: 3.5
+    max-violations: 20
+    cooldown: 1000
+    
+  AutoBlock:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Velocity:
+    enabled: true
+    threshold: 3.5
+    max-violations: 20
+    cooldown: 1000
+    
+  Criticals:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  NoSlow:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Scaffold:
+    enabled: true
+    threshold: 3.5
+    max-violations: 20
+    cooldown: 1000
+    
+  Tower:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  XCarry:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  GhostHand:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Offhand:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  BookBan:
+    enabled: true
+    threshold: 2.5
+    max-violations: 10
+    cooldown: 3000
+    
+  NBT:
+    enabled: true
+    threshold: 2.5
+    max-violations: 10
+    cooldown: 3000
+    
+  Map:
+    enabled: true
+    threshold: 2.5
+    max-violations: 10
+    cooldown: 3000
+    
+  Sign:
+    enabled: true
+    threshold: 2.5
+    max-violations: 10
+    cooldown: 3000
+    
+  JSON:
+    enabled: true
+    threshold: 2.5
+    max-violations: 10
+    cooldown: 3000
+    
+  PacketFlood:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  ChunkBan:
+    enabled: true
+    threshold: 2.5
+    max-violations: 10
+    cooldown: 3000
+    
+  Crafting:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Anvil:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Shulker:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  BookDupe:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Commands:
+    enabled: true
+    threshold: 2.5
+    max-violations: 10
+    cooldown: 3000
+    
+  Handshake:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Brand:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Classpath:
+    enabled: true
+    threshold: 2.5
+    max-violations: 10
+    cooldown: 3000
+    
+  ViaVersion:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Velocity:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Bedrock:
+    enabled: true
+    threshold: 3.5
+    max-violations: 20
+    cooldown: 1000
+    
+  Geyser:
+    enabled: true
+    threshold: 3.5
+    max-violations: 20
+    cooldown: 1000
+    
+  KeepAlive:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  RTT:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Jitter:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  PacketLoss:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  PacketTiming:
+    enabled: true
+    threshold: 3.5
+    max-violations: 20
+    cooldown: 1000
+    
+  BurstEntropy:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Periodicity:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Proxy:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  IPCorrelation:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  SessionCorrelation:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  AddressSpoof:
+    enabled: true
+    threshold: 2.5
+    max-violations: 10
+    cooldown: 3000
+    
+  PacketShaping:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Friction:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Traction:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  FluidDynamics:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  ElytraKinematics:
+    enabled: true
+    threshold: 3.5
+    max-violations: 20
+    cooldown: 1000
+    
+  RiptideKinematics:
+    enabled: true
+    threshold: 3.5
+    max-violations: 20
+    cooldown: 1000
+    
+  BoatInertia:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  CollisionConstraints:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  ReachRayTrace:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  SweptAABB:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  LatencyInterpolation:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  HitboxExpansion:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Baseline:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  EWMA:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  CUSUM:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  RobustStats:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  MedianMAD:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  SeasonalProfiles:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  TimeOfDay:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  GamemodeContext:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  WorldContext:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Clustering:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  HDBSCAN:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  AnomalyScoring:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  SelfTuning:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  AutoAdjust:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Weights:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Thresholds:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  FalsePositive:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  FalseNegative:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  GroundTruth:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Replay:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  CrossCheck:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  RiskScore:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Fusion:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Decay:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  HalfLife:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Hysteresis:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  RuleGraph:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  WeakSignals:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Performance:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  RingBuffers:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Windows:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Replay:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  ObjectPooling:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  GC:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  BatchEvaluation:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  PerTick:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  AdaptiveSampling:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  ServerLoad:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Monitor:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Folia:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Scheduling:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  ReplayFormat:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Binary:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  TimeIndex:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  SelectiveExport:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Windows:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  ScrubTools:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  AdminGUI:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  InGame:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  PerPlayer:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Charts:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  CPS:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  ZScores:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Ping:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Jitter:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  ViolationTimeline:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  OfflineAnalyzer:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  CLI:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  AutoTuning:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Thresholds:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  RecordedSessions:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  AntiTamper:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  SelfProtection:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  JarSignature:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Manifest:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  ClasspathWhitelist:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  ChecksumBeacons:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  CriticalClasses:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Debug:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Agent:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Detection:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  JDWP:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  JVMTI:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Instrumentation:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Stacktrace:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Attach:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Monitors:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  ConfigIntegrity:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  LogIntegrity:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  HMAC:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Obfuscation:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Hooks:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Telemetry:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Compatibility:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Adapters:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  NMS:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Versions:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Hitbox:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Physics:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Nuances:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  ViaVersion:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Aware:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Geyser:
+    enabled: true
+    threshold: 3.5
+    max-violations: 20
+    cooldown: 1000
+    
+  Floodgate:
+    enabled: true
+    threshold: 3.5
+    max-violations: 20
+    cooldown: 1000
+    
+  Bedrock:
+    enabled: true
+    threshold: 3.5
+    max-violations: 20
+    cooldown: 1000
+    
+  Movement:
+    enabled: true
+    threshold: 3.5
+    max-violations: 20
+    cooldown: 1000
+    
+  Model:
+    enabled: true
+    threshold: 3.5
+    max-violations: 20
+    cooldown: 1000
+    
+  Relaxed:
+    enabled: true
+    threshold: 3.5
+    max-violations: 20
+    cooldown: 1000
+    
+  Thresholds:
+    enabled: true
+    threshold: 3.5
+    max-violations: 20
+    cooldown: 1000
+    
+  Proxy:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Context:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Velocity:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Events:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  MultiInstance:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  SharedRisk:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Redis:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Map:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Admin:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  UX:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Profiles:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  World:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Gamemode:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Safe:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Default:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Aggressive:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  QA:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Tournament:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Strict:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Baseline:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  ActionLadder:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Cooldowns:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  GraceWindows:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Configurable:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Messages:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  MiniUI:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  AutoSlow:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Confirmed:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  HighRisk:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Silent:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Mode:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  QA:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Testing:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Simulation:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Clients:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  CheatClass:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  PropertyBased:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Tests:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Checks:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  CI:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Matrix:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Versions:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Profiles:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Nightly:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Replays:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Regression:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  FP:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  FN:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000
+    
+  Tracking:
+    enabled: true
+    threshold: 3.0
+    max-violations: 15
+    cooldown: 2000

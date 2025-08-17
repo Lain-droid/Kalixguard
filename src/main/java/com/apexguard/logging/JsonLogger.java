@@ -39,10 +39,10 @@ public final class JsonLogger implements AutoCloseable {
         if (value) verbosePlayers.add(uuid); else verbosePlayers.remove(uuid);
     }
 
-    public boolean isVerbose(UUID uuid) { return verbosePlayers.contains(uuid) || configManager.isVerboseDefault(); }
+    public boolean isVerbose(UUID uuid) { return verbosePlayers.contains(uuid) || configManager.profileBool("general", "debug", false); }
 
     public synchronized void log(Map<String, Object> event) {
-        if (!configManager.isJsonLogging() || writer == null) return;
+        if (!configManager.profileBool("general", "log-level", true) || writer == null) return;
         try {
             writer.write(toJson(event));
             writer.write('\n');

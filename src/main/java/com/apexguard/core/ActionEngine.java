@@ -39,10 +39,10 @@ public final class ActionEngine {
                 "player", uuid.toString()
         ));
 
-        if (newVl >= config.actionFlag()) notifyStaff(uuid, ctx, newVl);
-        if (newVl >= config.actionWarn()) warn(uuid, ctx, newVl);
-        if (newVl >= config.actionSlow()) slow(uuid, ctx, newVl);
-        if (newVl >= config.actionKick()) kick(uuid, ctx, newVl);
+        if (newVl >= config.profileInt("actions", "flag", 45)) notifyStaff(uuid, ctx, newVl);
+        if (newVl >= config.profileInt("actions", "warn", 35)) warn(uuid, ctx, newVl);
+        if (newVl >= config.profileInt("actions", "slow", 25)) slow(uuid, ctx, newVl);
+        if (newVl >= config.profileInt("actions", "kick", 50)) kick(uuid, ctx, newVl);
     }
 
     private void notifyStaff(UUID uuid, FlagContext ctx, int vl) {
