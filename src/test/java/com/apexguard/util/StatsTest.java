@@ -1,7 +1,6 @@
 package com.apexguard.util;
 
 import org.junit.jupiter.api.Test;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 public class StatsTest {
@@ -12,20 +11,37 @@ public class StatsTest {
     }
 
     @Test
-    void testRollingDoubleWindow() {
-        RollingDoubleWindow w = new RollingDoubleWindow(3);
-        w.add(1); w.add(2); w.add(3);
-        assertEquals(3, w.size());
-        assertEquals(2.0, w.mean(), 1e-6);
-        w.add(4);
-        assertEquals(3, w.size());
-        assertEquals(3.0, w.mean(), 1e-6);
+    void testMean() {
+        double[] values = {1.0, 2.0, 3.0, 4.0, 5.0};
+        double mean = Stats.mean(values);
+        assertEquals(3.0, mean, 1e-6);
     }
 
     @Test
-    void testGcdConsistency() {
-        double[] arr = {1.5, 3.0, 4.5, 6.0};
-        double c = Stats.gcdConsistency(arr);
-        assertTrue(c > 0.5);
+    void testMedian() {
+        double[] values = {1.0, 2.0, 3.0, 4.0, 5.0};
+        double median = Stats.median(values);
+        assertEquals(3.0, median, 1e-6);
+    }
+
+    @Test
+    void testVariance() {
+        double[] values = {1.0, 2.0, 3.0, 4.0, 5.0};
+        double variance = Stats.variance(values);
+        assertEquals(2.5, variance, 1e-6); // Sample variance: sum((x-mean)²)/(n-1)
+    }
+
+    @Test
+    void testStandardDeviation() {
+        double[] values = {1.0, 2.0, 3.0, 4.0, 5.0};
+        double stdDev = Stats.standardDeviation(values);
+        assertEquals(Math.sqrt(2.5), stdDev, 1e-6); // Sample std dev: √(sample variance)
+    }
+
+    @Test
+    void testRobustZScore() {
+        double[] values = {1.0, 2.0, 3.0, 4.0, 5.0, 100.0}; // outlier
+        double robustZ = Stats.robustZScore(100.0, values);
+        assertTrue(robustZ > 2.0); // Should detect outlier
     }
 }
