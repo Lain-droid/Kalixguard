@@ -157,6 +157,8 @@ public final class ConfigManager {
         config.addDefault("performance.batch-size", 50);
         config.addDefault("performance.queue-size", 1000);
         config.addDefault("performance.memory-limit", 512);
+        // Replay buffer bytes per player (for packet replay)
+        config.addDefault("performance.replay-buffer-bytes", 262144);
     }
     
     // Configuration getters with caching
@@ -251,6 +253,10 @@ public final class ConfigManager {
     
     public int getMemoryLimit() {
         return plugin.getConfig().getInt("performance.memory-limit", 512);
+    }
+
+    public long getMaxReplayBytesPerPlayer() {
+        return plugin.getConfig().getLong("performance.replay-buffer-bytes", 262144);
     }
     
     public void clearCache() {

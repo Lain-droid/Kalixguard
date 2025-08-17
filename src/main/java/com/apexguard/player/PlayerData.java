@@ -65,6 +65,9 @@ public final class PlayerData {
     private final RingBuffer<Boolean> offhandHistory;
     private final RingBuffer<Boolean> ghostHandHistory;
     
+    // Replay buffer for packets
+    private final ReplayBuffer replayBuffer;
+    
     // Statistics and ML
     private final ExponentialMovingAverage speedEMA;
     private final ExponentialMovingAverage cpsEMA;
@@ -134,6 +137,9 @@ public final class PlayerData {
         this.offhandHistory = new RingBuffer<>(50);
         this.ghostHandHistory = new RingBuffer<>(50);
         
+        // Initialize replay buffer
+        this.replayBuffer = new ReplayBuffer();
+        
         // Initialize EMAs with appropriate decay factors
         this.speedEMA = new ExponentialMovingAverage(0.1);
         this.cpsEMA = new ExponentialMovingAverage(0.1);
@@ -166,6 +172,8 @@ public final class PlayerData {
         this.lastVelocity = new AtomicReference<>();
         this.lastCombat = new AtomicReference<>();
     }
+    
+    public ReplayBuffer getReplayBuffer() { return replayBuffer; }
     
     // Getters
     public UUID getUuid() { return uuid; }

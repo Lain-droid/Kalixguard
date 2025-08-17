@@ -18,7 +18,7 @@ import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
 import org.bukkit.plugin.Plugin;
 
-import java.util.EnumSet;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
@@ -43,19 +43,17 @@ public final class ProtocolLibBridge implements ProtocolBridge {
     @Override
     public void register(CheckRegistry registry, PlayerManager playerManager, JsonLogger logger) {
         this.protocolManager = ProtocolLibrary.getProtocolManager();
-        Set<PacketType> listen = EnumSet.of(
-                PacketType.Play.Client.ARM_ANIMATION,
-                PacketType.Play.Client.USE_ENTITY,
-                PacketType.Play.Client.FLYING,
-                PacketType.Play.Client.LOOK,
-                PacketType.Play.Client.POSITION,
-                PacketType.Play.Client.POSITION_LOOK,
-                PacketType.Play.Client.BLOCK_DIG,
-                PacketType.Play.Client.BLOCK_PLACE,
-                PacketType.Play.Client.KEEP_ALIVE,
-
-                PacketType.Play.Server.KEEP_ALIVE
-        );
+        Set<PacketType> listen = new HashSet<>();
+        listen.add(PacketType.Play.Client.ARM_ANIMATION);
+        listen.add(PacketType.Play.Client.USE_ENTITY);
+        listen.add(PacketType.Play.Client.FLYING);
+        listen.add(PacketType.Play.Client.LOOK);
+        listen.add(PacketType.Play.Client.POSITION);
+        listen.add(PacketType.Play.Client.POSITION_LOOK);
+        listen.add(PacketType.Play.Client.BLOCK_DIG);
+        listen.add(PacketType.Play.Client.BLOCK_PLACE);
+        listen.add(PacketType.Play.Client.KEEP_ALIVE);
+        listen.add(PacketType.Play.Server.KEEP_ALIVE);
 
         protocolManager.addPacketListener(new PacketAdapter(plugin, ListenerPriority.NORMAL, listen) {
             @Override

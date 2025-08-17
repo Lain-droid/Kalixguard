@@ -50,7 +50,7 @@ dependencies {
 	
 	// Protocol handling (optional - will be loaded at runtime if available)
 	if (includeProtocolLib) {
-		compileOnly("com.comphenix.protocol:ProtocolLib:4.8.0")
+		compileOnly("com.github.dmulloy2:ProtocolLib:5.2.0")
 	}
 	
 	// Metrics and monitoring
