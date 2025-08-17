@@ -3,7 +3,7 @@ plugins {
 }
 
 group = "com.apexguard"
-version = "1.0.0"
+version = "1.0.3"
 description = "ApexGuard Anti-Cheat"
 
 val includeProtocolLib: Boolean = (findProperty("includeProtocolLib") as String?)?.toBoolean()
@@ -20,6 +20,7 @@ repositories {
 	mavenCentral()
 	maven("https://repo.papermc.io/repository/maven-public/")
 	maven("https://repo.codemc.io/repository/maven-public/")
+	maven("https://repo.codemc.org/repository/maven-public/")
 	maven("https://jitpack.io")
 	maven("https://repo.dmulloy2.net/repository/public/")
 }
